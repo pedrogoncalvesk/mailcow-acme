@@ -30,7 +30,7 @@ RUN apk add --update --no-cache \
 
 COPY docker-entrypoint.sh /srv/docker-entrypoint.sh
 
-RUN chmod +x /docker-entrypoint.sh
+RUN chmod +x /srv/docker-entrypoint.sh
 
 COPY ssl-example /var/lib/ssl-example
 
