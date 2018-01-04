@@ -30,4 +30,6 @@ RUN apk add --update --no-cache \
 
 COPY docker-entrypoint.sh /srv/docker-entrypoint.sh
 
+COPY ssl-example /var/lib/ssl-example
+
 CMD ["/sbin/tini", "-g", "--", "/srv/docker-entrypoint.sh"]

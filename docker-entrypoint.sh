@@ -10,7 +10,7 @@ fi
 
 echo "Waiting for Docker API..."
 until ping dockerapi -c1 > /dev/null; do
-  sleep 1
+  sleep 1;
 done
 
 ACME_BASE=/var/lib/acme
@@ -107,9 +107,9 @@ else
   fi
 fi
 
-while ! mysqladmin ping --host mysql -u${DBUSER} -p${DBPASS} --silent; do
-  echo "Waiting for database to come up..."
-  sleep 2
+while ! mysqladmin ping --host mysql-mailcow -u${DBUSER} -p${DBPASS} --silent; do
+  echo "Waiting for database to come up...";
+  sleep 2;
 done
 
 while true; do
@@ -124,10 +124,11 @@ while true; do
   declare -a ADDITIONAL_VALIDATED_SAN
   IFS=',' read -r -a ADDITIONAL_SAN_ARR <<< "${ADDITIONAL_SAN}"
   IPV4=$(get_ipv4)
-  # Container ids may have changed
-  CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx-mailcow") or contains("postfix-mailcow") or contains("dovecot-mailcow")) | .id' | tr "\n" " "))
 
-  log_f "Waiting for domain tables... " no_nl
+  # Container ids may have changed
+  CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx") or contains("postfix") or contains("dovecot")) | .id' | tr "\n" " "))
+
+  log_f "Waiting for domain tables... "
   while [[ -z ${DOMAIN_TABLE} ]]; do
     DOMAIN_TABLE=$(mysql -h mysql-mailcow -u ${DBUSER} -p${DBPASS} ${DBNAME} -e "SHOW TABLES LIKE 'domain'" -Bs)
     [[ -z ${DOMAIN_TABLE} ]] && sleep 10
