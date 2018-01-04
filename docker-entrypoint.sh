@@ -21,7 +21,7 @@ mkdir -p ${ACME_BASE}/acme/private
 restart_containers(){
   for container in $*; do
     echo "Restarting ${container}..."
-    curl -X POST http://dockerapi:8080/containers/${container}/restart
+    curl -X POST http://dockerapi:${DOCKERAPI_PORT}/containers/${container}/restart
   done
 }
 
@@ -126,7 +126,7 @@ while true; do
   IPV4=$(get_ipv4)
 
   # Container ids may have changed
-  CONTAINERS_RESTART=($(curl --silent http://dockerapi:8080/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx") or contains("postfix") or contains("dovecot")) | .id' | tr "\n" " "))
+  CONTAINERS_RESTART=($(curl --silent http://dockerapi:${DOCKERAPI_PORT}/containers/json | jq -r '.[] | {name: .Config.Labels["com.docker.compose.service"], id: .Id}' | jq -rc 'select( .name | tostring | contains("nginx") or contains("postfix") or contains("dovecot")) | .id' | tr "\n" " "))
 
   log_f "Waiting for domain tables... "
   while [[ -z ${DOMAIN_TABLE} ]]; do
