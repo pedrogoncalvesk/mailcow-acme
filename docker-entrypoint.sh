@@ -15,8 +15,12 @@ done
 
 ACME_BASE=/var/lib/acme
 SSL_EXAMPLE=/var/lib/ssl-example
+CERTS_BASE=/var/lib/certs
 
 mkdir -p ${ACME_BASE}/acme/private
+
+[[ -f ${CERTS_BASE}/cert.pem ]] && cp ${CERTS_BASE}/cert.pem ${SSL_EXAMPLE}/cert.pem
+[[ -f ${CERTS_BASE}/key.pem ]] && cp ${CERTS_BASE}/key.pem ${SSL_EXAMPLE}/key.pem
 
 restart_containers(){
   for container in $*; do
